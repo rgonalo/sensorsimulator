@@ -34,7 +34,6 @@ import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 
 import android.content.Context;
-import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -75,7 +74,7 @@ final class SensorSimulatorClient {
 	private ArrayList<Listener> mListeners = new ArrayList<Listener>();
 
 	@SuppressWarnings("unused")
-	private SensorManagerSimulator mSensorManager;
+	private SensorManager mSensorManager;
 
 	/**
 	 * Constructor for our SensorSimulatorClient.
@@ -86,7 +85,7 @@ final class SensorSimulatorClient {
 	 *            , SensorManagerSimulator that created this client
 	 */
 	protected SensorSimulatorClient(Context context,
-			SensorManagerSimulator sensorManager) {
+	        SensorManager sensorManager) {
 		connected = false;
 		mContext = context;
 		mSensorManager = sensorManager;

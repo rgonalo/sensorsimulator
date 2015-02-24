@@ -24,7 +24,6 @@ package org.openintents.sensorsimulator.hardware;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.widget.Toast;
 
@@ -38,9 +37,9 @@ import android.widget.Toast;
  * @author Josip Balic
  */
 
-public class SensorManagerSimulator {
+public class SensorManager {
 
-	private static SensorManagerSimulator instance;
+	private static SensorManager instance;
 
 	/**
 	 * TAG for logging.
@@ -53,7 +52,7 @@ public class SensorManagerSimulator {
 	 */
 	private static SensorSimulatorClient mClient;
 
-	private SensorManager mSensorManager = null;
+	private android.hardware.SensorManager mSensorManager = null;
 	private Context mContext;
 
 	public static final int SENSOR_DELAY_FASTEST = 0;
@@ -74,8 +73,8 @@ public class SensorManagerSimulator {
 	 * @param context
 	 *            Context of the activity.
 	 */
-	private SensorManagerSimulator(Context context,
-			SensorManager systemsensormanager) {
+	private SensorManager(Context context,
+	        android.hardware.SensorManager systemsensormanager) {
 		mContext = context;
 		mSensorManager = systemsensormanager;
 		mClient = new SensorSimulatorClient(mContext, this);
@@ -91,16 +90,16 @@ public class SensorManagerSimulator {
 	 *            , String that is used for checking in if loop
 	 * @return instance, instance of SensorManagerSimulator
 	 */
-	public static SensorManagerSimulator getSystemService(Context context,
+	public static SensorManager getSystemService(Context context,
 			String sensorManager) {
 		if (instance == null) {
 			if (sensorManager.equals(Context.SENSOR_SERVICE)) {
-				if (SensorManagerSimulator.isRealSensorsAvailable()) {
-					instance = new SensorManagerSimulator(context,
-							(SensorManager) context
+				if (SensorManager.isRealSensorsAvailable()) {
+					instance = new SensorManager(context,
+							(android.hardware.SensorManager) context
 									.getSystemService(sensorManager));
 				} else {
-					instance = new SensorManagerSimulator(context, null);
+					instance = new SensorManager(context, null);
 					Toast.makeText(
 							context,
 							"Android SensorManager disabled, 1.5 SDK emulator crashes when using it... Make sure to connect SensorSimulator",
@@ -120,7 +119,7 @@ public class SensorManagerSimulator {
 	 * 
 	 * @param sensormanager
 	 */
-	public void setDefaultSensorManager(SensorManager sensormanager) {
+	public void setDefaultSensorManager(android.hardware.SensorManager sensormanager) {
 		mSensorManager = sensormanager;
 	}
 

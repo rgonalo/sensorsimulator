@@ -27,16 +27,14 @@ import java.util.ArrayList;
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import org.openintents.sensorsimulator.hardware.Sensor;
-import org.openintents.sensorsimulator.hardware.SensorList;
 import org.openintents.sensorsimulator.hardware.SensorEvent;
 import org.openintents.sensorsimulator.hardware.SensorEventListener;
-import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
+import org.openintents.sensorsimulator.hardware.SensorManager;
 import org.openintents.sensorsimulator.hardware.SensorNames;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -74,7 +72,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 	 */
 	private static final String TAG = "SensorSimulatorSettingsActivity";
 
-	private SensorManagerSimulator mSensorManager;
+	private SensorManager mSensorManager;
 
 	private EditText mEditTextIP;
 	private EditText mEditTextSocket;
@@ -135,7 +133,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		setContentView(R.layout.sensorsimulator);
 
 		// add as sensor manager our's sensor manager simulator
-		mSensorManager = SensorManagerSimulator.getSystemService(this,
+		mSensorManager = SensorManager.getSystemService(this,
 				SENSOR_SERVICE);
 
 		// set convenience for storing and loading IP and port for connection
