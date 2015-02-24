@@ -43,7 +43,8 @@ public class SensorNames {
 	public static final String TYPE_TEMPERATURE = "temperature";
 	public static final String TYPE_MAGNETIC_FIELD = "magnetic field";
 	public static final String TYPE_LIGHT = "light";
-	public static final String TYPE_GYROSCOPE = "gyroscope";
+    public static final String TYPE_GYROSCOPE = "gyroscope";
+    public static final String TYPE_GYROSCOPE_UNCALIBRATED = "gyroscope uncalibrated";
 	public static final String TYPE_PROXIMITY = "proximity";
 	public static final String TYPE_PRESSURE = "pressure";
 	public static final String TYPE_BARCODE_READER = "barcode reader";
@@ -75,6 +76,8 @@ public class SensorNames {
 			return SensorNames.TYPE_ORIENTATION;
 		case Sensor.TYPE_GYROSCOPE:
 			return SensorNames.TYPE_GYROSCOPE;
+        case Sensor.TYPE_GYROSCOPE_UNCALIBRATED:
+            return SensorNames.TYPE_GYROSCOPE_UNCALIBRATED;
 		case Sensor.TYPE_LIGHT:
 			return SensorNames.TYPE_LIGHT;
 		case Sensor.TYPE_PRESSURE:
@@ -106,8 +109,10 @@ public class SensorNames {
 	public static int getSensorInteger(String sensorName) {
 		if (sensorName.equalsIgnoreCase(TYPE_ACCELEROMETER)) {
 			return Sensor.TYPE_ACCELEROMETER;
-		} else if (sensorName.equalsIgnoreCase(TYPE_GYROSCOPE)) {
-			return Sensor.TYPE_GYROSCOPE;
+        } else if (sensorName.equalsIgnoreCase(TYPE_GYROSCOPE)) {
+            return Sensor.TYPE_GYROSCOPE;
+        } else if (sensorName.equalsIgnoreCase(TYPE_GYROSCOPE_UNCALIBRATED)) {
+            return Sensor.TYPE_GYROSCOPE_UNCALIBRATED;
 		} else if (sensorName.equalsIgnoreCase(TYPE_LIGHT)) {
 			return Sensor.TYPE_LIGHT;
 		} else if (sensorName.equalsIgnoreCase(TYPE_MAGNETIC_FIELD)) {
@@ -189,7 +194,8 @@ public class SensorNames {
 		case Sensor.TYPE_LINEAR_ACCELERATION:
 		case Sensor.TYPE_GRAVITY:
 		case Sensor.TYPE_MAGNETIC_FIELD:
-		case Sensor.TYPE_GYROSCOPE:
+        case Sensor.TYPE_GYROSCOPE:
+        case Sensor.TYPE_GYROSCOPE_UNCALIBRATED:
 		case Sensor.TYPE_ROTATION_VECTOR:
 			return 3;
 		case Sensor.TYPE_PRESSURE:

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import org.openintents.sensorsimulator.hardware.Sensor;
+import org.openintents.sensorsimulator.hardware.SensorList;
 import org.openintents.sensorsimulator.hardware.SensorEvent;
 import org.openintents.sensorsimulator.hardware.SensorEventListener;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;

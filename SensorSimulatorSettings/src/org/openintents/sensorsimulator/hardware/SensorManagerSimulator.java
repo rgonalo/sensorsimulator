@@ -61,7 +61,7 @@ public class SensorManagerSimulator {
 	public static final int SENSOR_DELAY_NORMAL = 3;
 	public static final int SENSOR_DELAY_UI = 2;
 
-	private static Sensor sensors;
+	private static SensorList sensors = new SensorList();
 
 	/**
 	 * Constructor.
@@ -249,15 +249,11 @@ public class SensorManagerSimulator {
 	 * @return sensors, Sensor object that is used in our methods.
 	 */
 	public Sensor getDefaultSensor(int type) {
-		if (sensors == null) {
-			sensors = new Sensor(mContext, type);
-			return sensors;
-		} else if (sensors.checkList(type)) {
-			sensors.addSensor(type);
-			return sensors;
+		if (sensors.checkList(type)) {
+			return sensors.addSensor(type);
 		} else {
 			sensors.removeSensor(type);
-			return sensors;
+			return null;
 		}
 	}
 }

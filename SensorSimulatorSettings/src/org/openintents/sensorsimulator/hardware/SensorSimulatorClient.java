@@ -263,34 +263,27 @@ final class SensorSimulatorClient {
 		// listener
 		// and add it to our array
 		synchronized (mListeners) {
-			Listener l = null;
-			Iterator<Listener> iter = mListeners.iterator();
-			while (iter.hasNext()) {
-				Listener i = iter.next();
-				if (i.mSensorListener == listener) {
-					l = i;
-					break;
-				}
-			}
+		    Listener l = null;
+		    Iterator<Listener> iter = mListeners.iterator();
+		    while (iter.hasNext()) {
+		            Listener i = iter.next();
+		            if (i.mSensorListener == listener) {
+		                    l = i;
+		                    break;
+		            }
+		    }
 
-			if (mListeners.isEmpty()) {
-				l = new Listener(listener, sensor, delay);
-				result = enableSensor(sensor, delay);
-				if (result) {
-					mListeners.add(l);
-					sensor.addSensorToList(sensor.sensorToRegister);
-					sensor.addSensor(0);
-					mListeners.notify();
-				}
-			} else {
-				l = new Listener(listener, sensor, delay);
-				result = enableSensor(sensor, delay);
-				if (result) {
-					l.addSensors(sensor, delay);
-					mListeners.add(l);
-					sensor.addSensor(0);
-					mListeners.notify();
-				}
+		    if(l == null) {
+		        l = new Listener(listener, sensor, delay);
+		    } else {
+		        l.addSensor(sensor, delay);
+		    }
+		
+			result = enableSensor(sensor, delay);
+			if (result) {
+                Log.d(TAG, "Register listener with sensor " + sensor.getName());
+				mListeners.add(l);
+				mListeners.notify();
 			}
 		}
 
@@ -311,25 +304,22 @@ final class SensorSimulatorClient {
 			Iterator<Listener> itr = mListeners.iterator();
 			do {
 
-				Listener element = itr.next();
-
-				if (element.hasSensor(sensor.sensorToRemove))
-
-				{
-					// Line below is used to disable sensor
-					boolean result = enableSensor(sensor, -1);
-
-					if (result) {
-
-						if (mListeners.size() == 1) {
-							mListeners = new ArrayList<Listener>();
-						} else {
-							mListeners.remove(element);
-						}
-
-						sensor.removeSensorFromList(sensor.sensorToRemove);
-						sensor.removeSensor(0);
-						break;
+				Listener simListener = itr.next();
+				if (simListener.mSensorListener == listener) {
+                    Iterator<Sensor> iterSensors = simListener.mSensors.iterator();
+                    while (iterSensors.hasNext()) {
+                        Sensor mSensor = iterSensors.next();
+	                    if (mSensor.getType() == sensor.getType()) {
+	                        // Line below is used to disable sensor
+	                        boolean result = enableSensor(sensor, -1);
+	                        if (result) {
+	                            iterSensors.remove();
+	                            if (simListener.mSensors.size() == 0) {
+	                                //itr.remove();
+	                            }
+	                        }
+	                        break;
+	                    }
 					}
 				}
 
@@ -348,24 +338,26 @@ final class SensorSimulatorClient {
 	protected void unregisterListener(SensorEventListener listener) {
 
 		if (mListeners.size() != 0) {
-
-			Iterator<Listener> itr = mListeners.iterator();
-			Sensor mSensor = itr.next().mSensor;
-			ArrayList<Integer> sensors = mSensor.getList();
-
-			int[] sensor = new int[sensors.size()];
-			for (int i = 0; i < sensors.size(); i++) {
-				if (sensors.get(i) != null) {
-					sensor[i] = (sensors.get(i).intValue());
-				}
-			}
-
-			for (int i = 0; i < sensor.length; i++) {
-				mSensor.removeSensor(sensor[i]);
-				unregisterListener(listener, mSensor);
-			}
+            Iterator<Listener> iter = mListeners.iterator();
+            while (iter.hasNext()) {
+                Listener simListener = iter.next();
+                if (simListener.mSensorListener == listener) {
+                    Iterator<Sensor> iterSensors = simListener.mSensors.iterator();
+                    while (iterSensors.hasNext()) {
+                        Sensor sensor = iterSensors.next();
+                        // Line below is used to disable sensor
+                        boolean result = enableSensor(sensor, -1);
+                        if (result) {
+                            iterSensors.remove();
+                            if (simListener.mSensors.size() == 0) {
+                                //iter.remove();
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
 		}
-
 	}
 
 	// ///////////////////////////////////////////////////
@@ -382,13 +374,12 @@ final class SensorSimulatorClient {
 	private class Listener {
 
 		private SensorEventListener mSensorListener;
-		private Sensor mSensor;
-		private ArrayList<Integer> mSensors;
+		private ArrayList<Sensor> mSensors;
 		private int mDelay;
 		private long mNextUpdateTime;
 
 		/**
-		 * addSensors is used to add sensor to listener it creates.
+		 * addSensor is used to add sensor to listener it creates.
 		 * 
 		 * @param sensor
 		 *            Sensor, Sensor object in which sensor we want to enable is
@@ -397,10 +388,8 @@ final class SensorSimulatorClient {
 		 *            , integer that represents delay for this sensor
 		 * @return mSensors, Sensor object
 		 */
-		ArrayList<Integer> addSensors(Sensor sensor, int delay) {
-			int sensors = sensor.sensorToRegister;
-			sensor.addSensorToList(sensors);
-			mSensors.add(sensors);
+		ArrayList<Sensor> addSensor(Sensor sensor, int delay) {
+			mSensors.add(sensor);
 			if (delay < mDelay) {
 				mDelay = delay;
 				mNextUpdateTime = 0;
@@ -408,7 +397,7 @@ final class SensorSimulatorClient {
 			return mSensors;
 		}
 
-		/**
+        /**
 		 * Method used to find if this Listener contains particular sensor.
 		 * 
 		 * @param sensor
@@ -416,15 +405,23 @@ final class SensorSimulatorClient {
 		 * @return true or false, true if this sensor created this listener,
 		 *         otherwise false
 		 */
-		boolean hasSensor(int sensor) {
+		boolean hasSensor(int sensorType) {
 			for (int i = 0; i < mSensors.size(); i++) {
-				if (mSensors.get(i) == sensor)
+				if (mSensors.get(i).getType() == sensorType)
 					return true;
 			}
 			return false;
 		}
 
-		/**
+        Sensor getSensor(int sensorType) {
+            for (int i = 0; i < mSensors.size(); i++) {
+                if (mSensors.get(i).getType() == sensorType)
+                    return mSensors.get(i);
+            }
+            return null;
+        }
+
+        /**
 		 * Constructor of Listener class
 		 * 
 		 * @param listener
@@ -438,11 +435,10 @@ final class SensorSimulatorClient {
 		Listener(SensorEventListener listener, Sensor sensor, int delay) {
 
 			mSensorListener = listener;
-			mSensors = new ArrayList<Integer>();
-			mSensors.add(sensor.sensorToRegister);
+			mSensors = new ArrayList<Sensor>();
+			mSensors.add(sensor);
 			mDelay = delay;
 			mNextUpdateTime = 0;
-			mSensor = sensor;
 		}
 	}
 
@@ -456,15 +452,8 @@ final class SensorSimulatorClient {
 	 * @return True, if sensor is enabled
 	 */
 	private boolean enableSensor(Sensor sensorAdd, int delay) {
-		String sensorString = null;
 		boolean result = false;
-		if (delay == -1) {
-			sensorString = SensorNames.getSensorName(sensorAdd.sensorToRemove);
-		} else {
-			sensorString = SensorNames
-					.getSensorName(sensorAdd.sensorToRegister);
-		}
-
+		String sensorString = sensorAdd.getName();
 		try {
 			setSensorUpdateDelay(sensorString, delay);
 			result = true;
@@ -475,7 +464,6 @@ final class SensorSimulatorClient {
 		if (!mHandler.hasMessages(MSG_UPDATE_SENSORS)) {
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPDATE_SENSORS));
 		}
-		sensorString = null;
 		return result;
 	}
 
@@ -518,7 +506,7 @@ final class SensorSimulatorClient {
 						// Go through all sensors for this listener
 						int sensorbit = 1;
 						for (int i = 0; i < MAX_SENSOR; i++) {
-							if (hasSensor(l.mSensors, sensorbit)) {
+							if (l.hasSensor(sensorbit)) {
 								// Get current sensor values (if not yet cached)
 								if (!mValuesCached[i]) {
 									readSensor(sensorbit, mValues[i], barcode);
@@ -529,12 +517,12 @@ final class SensorSimulatorClient {
 								// sensor and create appropriate
 								if (barcode != null) {
 									SensorEvent event = new SensorEvent(
-											mContext, barcode, sensorbit);
+											mContext, barcode, sensorbit, l.getSensor(sensorbit));
 									barcode = null;
 									l.mSensorListener.onSensorChanged(event);
 								} else {
 									SensorEvent event = new SensorEvent(
-											mContext, mValues[i], sensorbit);
+											mContext, mValues[i], sensorbit, l.getSensor(sensorbit));
 									l.mSensorListener.onSensorChanged(event);
 								}
 							}
@@ -574,15 +562,15 @@ final class SensorSimulatorClient {
 	// ///////////////////////////////////////////////////////////
 	// Bridge to old API
 
-	static boolean hasSensor(ArrayList<Integer> sensors, int sensor) {
+	static boolean hasSensor(ArrayList<Sensor> sensors, int sensorType) {
 		for (int i = 0; i < sensors.size(); i++) {
-			if (sensors.get(i) == sensor)
+			if (sensors.get(i).getType() == sensorType)
 				return true;
 		}
 		return false;
 	}
 
-	// Here we added to original method a barcode2 String also so that we can
+    // Here we added to original method a barcode2 String also so that we can
 	// get incoming barcode variables as a String and not float[] values
 	private void readSensor(int sensorbit, float[] sensorValues, String barcode2) {
 		String sensorname = SensorNames.getSensorName(sensorbit);

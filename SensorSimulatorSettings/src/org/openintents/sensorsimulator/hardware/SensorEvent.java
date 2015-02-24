@@ -66,11 +66,12 @@ public class SensorEvent extends Object {
 	 * @param type2
 	 *            , integer number of sensor that this SensorEvent is linked to.
 	 */
-	protected SensorEvent(Context context, float[] values2, int type2) {
+	protected SensorEvent(Context context, float[] values2, int type2, Sensor sensor2) {
 		super();
 		mContext = context;
 		values = values2;
 		type = type2;
+		sensor = sensor2;
 		SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
 		timestamp = System.nanoTime();
 		time = dataFormat.format(calendar.getTime());
@@ -88,10 +89,11 @@ public class SensorEvent extends Object {
 	 * @param sensorType
 	 *            , integer of sensor this event is linked to.
 	 */
-	public SensorEvent(Context context, String barcode2, int sensorType) {
+	public SensorEvent(Context context, String barcode2, int sensorType, Sensor sensor2) {
 		mContext = context;
 		barcode = barcode2;
-		type = sensorType;
+        type = sensorType;
+        sensor = sensor2;
 	}
 
 }
