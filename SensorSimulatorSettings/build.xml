@@ -68,18 +68,34 @@
          application and should be checked into Version Control Systems. -->
     <property file="default.properties" />
 
-    <!-- Custom Android task to deal with the project target, and import the
-         proper rules.
-         This requires ant 1.6.0 or above. -->
-    <path id="android.antlibs">
-        <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
-        <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
-        <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
-    </path>
+    <!-- if sdk.dir was not set from one of the property file, then
+         get it from the ANDROID_HOME env var.
+         This must be done before we load project.properties since
+         the proguard config can use sdk.dir -->
+    <property environment="env" />
+    <condition property="sdk.dir" value="${env.ANDROID_HOME}">
+        <isset property="env.ANDROID_HOME" />
+    </condition>
 
-    <taskdef name="setup"
-        classname="com.android.ant.SetupTask"
-        classpathref="android.antlibs" />
+    <!-- The project.properties file is created and updated by the 'android'
+         tool, as well as ADT.
+
+         This contains project specific properties such as project target, and library
+         dependencies. Lower level build properties are stored in ant.properties
+         (or in .classpath for Eclipse projects).
+
+         This file is an integral part of the build system for your
+         application and should be checked into Version Control Systems. -->
+    <loadproperties srcFile="project.properties" />
+
+    <!-- quick check on sdk.dir -->
+    <fail
+            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
+            unless="sdk.dir"
+    />
+
+    <import file="custom_rules.xml" optional="true" />
+    <import file="${sdk.dir}/tools/ant/build.xml" />
 
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
@@ -115,7 +131,6 @@
                below to <setup import="false" />.
              - customize to your needs.
     -->
-    <setup />
 
 
 <!-- #############################################
@@ -140,7 +155,7 @@
 	<!-- Content is defined in "build-lib-content.txt" -->
     <property name="out.lib.file"
             location="${out.absolute.dir}/${out.lib.file.name}" />
-	<target name="lib"  depends="compile" >
+	<target name="lib"  depends="debug" >
 		<jar
 			destfile="${out.lib.file}"
 			basedir="${out.classes.absolute.dir}"
@@ -161,6 +176,5 @@
 	<!-- ############ Convencience target ############## -->
 	<target name="all" 
 		depends="release, lib, javadoc" />
-	
-	
+
 </project>
