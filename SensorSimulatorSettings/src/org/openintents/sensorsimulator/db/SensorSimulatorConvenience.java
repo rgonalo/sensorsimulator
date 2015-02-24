@@ -139,7 +139,7 @@ public class SensorSimulatorConvenience {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "insert into table 'contains' failed", e);
-			return "Preferences table corrupt!";
+			return "";
 		}
 	}
 

@@ -73,7 +73,12 @@ public abstract class SensorSimulator {
 	/**
 	 * The default value for socket. Value: 8010.
 	 */
-	public static final String DEFAULT_SOCKET = "8010";
+    public static final String DEFAULT_SOCKET = "8010";
+
+    /**
+     * The default value for ip. Value: 10.0.2.2.
+     */
+    public static final String DEFAULT_IP = "10.0.2.2";
 
 	/**
 	 * Default projection of table columns.

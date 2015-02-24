@@ -113,8 +113,14 @@ final class SensorSimulatorClient {
 				// get Info from ContentProvider
 				String ipaddress = mSensorSimulatorConvenience
 						.getPreference(SensorSimulator.KEY_IPADDRESS);
+		        if (ipaddress.contentEquals("")) {
+		            ipaddress = SensorSimulator.DEFAULT_IP;
+		        }
 				String socket = mSensorSimulatorConvenience
 						.getPreference(SensorSimulator.KEY_SOCKET);
+		        if (socket.contentEquals("")) {
+		            socket = SensorSimulator.DEFAULT_SOCKET;
+		        }
 
 				Log.i(TAG, "Connecting to " + ipaddress + " : " + socket);
 
